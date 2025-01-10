@@ -1,59 +1,31 @@
-//Load in the canvas for the game
 const gameboard = document.getElementById('gameboard');
 const ctx = gameboard.getContext('2d');
-
-//Set the size of the board = size of the canvas
 const board_width = gameboard.width = 600;
 const board_height = gameboard.height = 600;
 
-//Default size of the sprites
 const spriteWidth = 600;
 const spriteHeight = 600;
 
-let key = '';
-let gameFrame = 0;
-let difficulty = 0;
-
+let enemyTimer = 200;
+let difficulty = 1;
+let enemyFrame = 0;
 let Enemies = [];
-let enemyNumber = 1;
-
-const planeAnims = [];
-
-const animsStates = [{
-    name: 'idle', frames: 6,
-},
-{
-    name: 'moveUp', frames: 5,
-},
-{
-    name: 'moveDown', frames: 6
-}];
-
-//Fill the array with all the posible coordinates for the sprites
-animsStates.forEach((state,index) => {
-    let frames = {
-        location: [],
-    }
-    for(let i = 0; i < state.frames; i++){
-        let positionX = spriteWidth * i;
-        let positionY = spriteHeight * index;
-        frames.location.push({x: positionX, y: positionY});
-    }
-    planeAnims[state.name] = frames;
-});
-//console.log(animsStates);
-//console.log(planeAnims);
+let Explosions = [];
+let enemyNumber = 3;
 
 class KeyboardInput{
     constructor(){
+        this.key = '';
+        this.positionX = 0;
+        this.positionY = 0;
+        //this.mouse = {positionX: undefined, positionY: undefined};
         window.addEventListener('keydown', down =>{
             if(down.key == 'ArrowUp'   ||
                down.key == 'ArrowDown' ||
                down.key == 'ArrowLeft' ||
                down.key == 'ArrowRight'   )
                {
-                    key = down.key;
-                    //console.log(key);
+                    this.key = down.key;
                 }
         })
         window.addEventListener('keyup', up =>{
@@ -62,14 +34,31 @@ class KeyboardInput{
                up.key == 'ArrowLeft' ||
                up.key == 'ArrowRight'   )
                {
-                    key = '';
-                    //console.log(key);
+                    this.key = '';
                 }
+        })  
+        window.addEventListener('click', function(clicked){
+            const clickPosition = gameboard.getBoundingClientRect();
+            this.positionX = clicked.clientX - clickPosition.left;
+            this.positionY = clicked.clientY - clickPosition.top
+            Explosions.push(new Explosion(this.positionX,this.positionY));
+            //this.mouse.positionX = clicked.offsetX;
+            //this.mouse.positionY = clicked.offsetY;
+            //console.log(clicked) 
         })
+    }
+}
+class Score{
+    constructor(){
+
+    }
+    displayScore(){
+
+    }
+    updateScore(){
 
     }
 }
-
 class Plane{
     constructor(){
         this.plane = new Image();
@@ -83,16 +72,43 @@ class Plane{
         this.planeState = 'idle';
         this.planePosX = 0;
         this.planePosY = 200;
+        this.gameOver = false;
+
+        this.planeAnims = [];
+
+        this.animsStates = [{
+            name: 'idle', frames: 6,
+        },
+        {
+            name: 'moveUp', frames: 6,
+        },
+        {
+            name: 'moveDown', frames: 6
+        }];
+
+        this.animsStates.forEach((state,index) => {
+            let frames = {
+                location: [],
+            }
+            for(let i = 0; i < state.frames; i++){
+                let positionX = spriteWidth * i;
+                let positionY = spriteHeight * index;
+                frames.location.push({x: positionX, y: positionY});
+            }
+            this.planeAnims[state.name] = frames;
+        });
+
     }
     drawPlane(){
-
-        //Sometimes the game cannot read y value anc crashes. It happens only when playing the moveUp animation. When attempting to load for the first time after pressing the up key.
-        console.log(planeAnims[this.planeState].location[this.AnimPosX].y);
-       this.AnimPosY = planeAnims[this.planeState].location[this.AnimPosX].y; 
-       
+       this.AnimPosY = this.planeAnims[this.planeState].location[this.AnimPosX].y; 
+       //ctx.strokeStyle = 'black';
+       //ctx.beginPath();
+       //ctx.arc(this.planePosX + this.spriteWidth/2,this.planePosY+ this.spriteHeight/2,this.spriteWidth/2,0,Math.PI * 2);
+       //ctx.stroke();
+       //ctx.strokeRect(this.planePosX,this.planePosY,this.spriteWidth,this.spriteHeight);
        ctx.drawImage(this.plane,spriteWidth * this.AnimPosX,this.AnimPosY,spriteWidth,spriteHeight,this.planePosX,this.planePosY,this.spriteWidth,this.spriteHeight);
         if(this.planeFrame % this.slowDown == 0 ){
-            if(this.AnimPosX < planeAnims[this.planeState].location.length -1 ){
+            if(this.AnimPosX < this.planeAnims[this.planeState].location.length -1){
                 this.AnimPosX++;
             }else{
                 this.AnimPosX=0;
@@ -100,9 +116,7 @@ class Plane{
         }
         this.planeFrame++;
         }
-    movePlane(){
-        //Check if the plane is not crossing the boundaries of the game frame
-        //If yes keep the same position it has
+    movePlane(KeyboardInput){
         if(this.planePosX > board_width - this.spriteWidth){
             this.planePosX = board_width - this.spriteWidth;
         }else if(this.planePosX < 0){
@@ -112,7 +126,7 @@ class Plane{
         }else if(this.planePosY < 0){
             this.planePosY = 0;
         }else{
-            switch(key){
+            switch(KeyboardInput.key){
                 case 'ArrowUp':
                     this.planePosY-=1.5;
                     this.planeState = 'moveUp';
@@ -132,8 +146,42 @@ class Plane{
             }
         }  
     }
+    planeCrash(Enemies){
+        Enemies.forEach(enemy =>{
+            const planeRadius = (this.spriteWidth/2)*0.75;
+            const enemyRaidus = (enemy.spriteWidth/2)*0.75;
+            const collisionDistance = planeRadius + enemyRaidus;
+            const side1 = Math.pow((this.planePosX - enemy.positionX),2);
+            const side2 = Math.pow((this.planePosY - enemy.positionY),2);
+            const side3 = Math.sqrt(side1 + side2);
+            if(collisionDistance > side3){
+                this.gameOver = true;
+                console.log('Game Over');
+            }
+        })
+    }
 }
-
+class Explosion {
+    constructor(positionX,positionY){
+        this.explosion = new Image();
+        this.explosion.src = 'sprites/explosion_sprite_transparent.png';
+        this.positionX = positionX;
+        this.positionY = positionY;
+        this.spriteWidth = 200;
+        this.spriteHeight = 200;
+        this.explosionFrame = 0;
+        this.slowDown = 5;
+        this.AnimPosX = 0;
+ 
+    }
+    drawExplosion(){
+            ctx.drawImage(this.explosion,this.AnimPosX * spriteWidth,0,spriteWidth,spriteHeight,this.positionX-this.spriteWidth/2,this.positionY-this.spriteHeight/2,this.spriteWidth,this.spriteHeight);        
+            if(this.explosionFrame % this.slowDown == 0){
+                this.AnimPosX +=1;
+            }
+            this.explosionFrame +=1;     
+    }
+}
 class Background {
     constructor(){
         this.bgpos1 = 0;
@@ -145,27 +193,21 @@ class Background {
 
     }
     drawBackground(){
-        //Sky layer of the background
         ctx.drawImage(this.bgSky,this.bgPos2,0);
         ctx.drawImage(this.bgSky,this.bgPos2-spriteWidth,0);
-        if(this.bgPos2 >= 600){
+        if(this.bgPos2 >= spriteWidth){
             this.bgPos2 =0;
         }else{
             this.bgPos2 +=0.1;
         }
-        //Commie blocks layer of the background
-        ctx.drawImage(this.bgBlock,this.bgpos1,300);
-        ctx.drawImage(this.bgBlock,this.bgpos1+spriteWidth,300);
-        if(this.bgpos1 == -600){
+        ctx.drawImage(this.bgBlock,this.bgpos1,spriteWidth/2);
+        ctx.drawImage(this.bgBlock,this.bgpos1+spriteWidth,spriteWidth/2);
+        if(this.bgpos1 == -spriteWidth){
             this.bgpos1 = 0;
         }else{
             this.bgpos1 -= 1.5;
         }
     }
-    stopBackground(){
-        //If the plane crashes. The game stops
-    }
-
 }
 
 
@@ -175,22 +217,21 @@ class Enemy {
         this.saucer.src = 'sprites/sprite_saucer_move_transparent.png';
         this.spriteWidth = 200;
         this.spriteHeight = 200;
-        //Spawn the enemy off the canvas, slowly move into the frame X coordinate 600+, Y coordinate 0 - 600
         //Math.random() * (max value - min value) + min value;
-        this.positionX = Math.random() * ((board_width + 100) - board_width) + board_width;
-        this.positionY = Math.random() * (board_height - this.spriteHeight) + this.spriteHeight; 
+        //Need some tweaking here, saucers are spawning too close to each other!
+        this.positionX = Math.random() * 100 + board_width;
+        this.positionY = Math.random() * board_height - this.spriteHeight;
         this.AnimPosX = 0;
         this.AnimPosY = 0;
-        //Different speed of the saucer animation
         this.slowDown = Math.floor(Math.random() * 4 + 2);
-        //Different speed of the saucer movement
-        this.speed = Math.random() * (1 - 0.2) + 0.2;
-        //Different types of the enemies, for different move patterns
+        this.speed = Math.random() * 2 + 1;
+        //Different types of the enemies, for different move patterns, not implemented
         //this.type = Math.random() * 1 + 1
         this.type = 1;
         this.enemyFrame = 0;
+        this.destroyed = false;
+        this.lives = 20;
     }
-    //Taking care of the sprite animation first
     drawEnemy(){
         //Src image, coordinates for cutting, size of the cut, placement of the image, size of the image
         ctx.drawImage(this.saucer,spriteWidth * this.AnimPosX, this.AnimPosY, spriteWidth, spriteHeight, this.positionX ,this.positionY, this.spriteHeight, this.spriteWidth);
@@ -202,11 +243,8 @@ class Enemy {
                 this.AnimPosX += 1;
             }
         }
-        this.enemyFrame++;
-        //console.log(this.AnimPosX,this.AnimPosY,this.slowDown,this.positionX,this.positionY);
-        
+        this.enemyFrame++;       
     }
-    //Then move the enemy position
     moveEnemy(){
         //If the Position of the saucer is behind the edge of the game, reset it back to the start
         switch(this.type) {
@@ -215,56 +253,89 @@ class Enemy {
                 if(this.positionX + this.spriteWidth < 0){
                     this.positionX = Math.random() * ((board_width + 100) - board_width) + board_width;
                     this.positionY = Math.random() * ((board_height - 30) - 30) + 30; 
-                    this.speed = Math.random() * (1 - 0.1) + 0.1;
+                    this.speed = Math.random() * 2 + 1;
                 }else{
                     this.positionY -= Math.round(Math.random()) * 2 - 1;
                     this.positionX -= this.speed;
                 }
                 break;
-                // Maybe here as well .. who knows?
+                // In case I want to implement another pattern
                 case 2:
                     break;
                     
         }  
     }
+    checkBoomBoom(Explosions){  
+        Explosions.forEach(explosion => {
+            if(explosion.positionX > this.positionX && explosion.positionX < this.positionX + this.spriteWidth &&  
+                explosion.positionY > this.positionY && explosion.positionY < this.positionY + this.spriteHeight && this.lives == 0){
+                    console.log("Enemy destroyed")
+                    this.destroyed = true;
+                }else if(explosion.positionX > this.positionX && explosion.positionX < this.positionX + this.spriteWidth &&  
+                    explosion.positionY > this.positionY && explosion.positionY < this.positionY + this.spriteHeight){
+                    this.lives -=1;
+                    console.log("Enemy hit")
+                }
+        })
+    }
 }
 
-// Create class instances
 const plane = new Plane();
 const input = new KeyboardInput();
 const background = new Background ();
+const explosion = new Explosion();
 
-//Add more enemies, making the game harder over the time
-function addEnemies(gameFrame,difficulty){
-    if(gameFrame % difficulty == 0){
-        for(let i = 0; i < enemyNumber;i++){
-            Enemies.push(new Enemy());  
-            console.log('Added new Enemy');
-           }
+//Might require some tweaking, but better now
+function addEnemies(){    
+    let enemyRandom = Math.floor(Math.random() * 400 + 100)
+    if(enemyFrame > enemyTimer + enemyRandom && difficulty % 5 == 0 ){
+            for(let i = 0; i < enemyNumber;i++){
+                Enemies.push(new Enemy());  
+                console.log('Difficulty ' + difficulty + ' Added new Enemy');
+            } 
+            enemyTimer -= 10;
+            enemyNumber +=1
+            enemyFrame = 0;
+            difficulty++;
+            console.log('EnemyTimer: ' + enemyTimer + ' Number of Enemies: ' + enemyNumber);
+            console.log(Enemies);     
+
+    }else if(enemyFrame > enemyTimer + enemyRandom){
+            for(let i = 0; i < enemyNumber;i++){
+                Enemies.push(new Enemy());  
+                console.log('Difficulty ' + difficulty + ' Added new Enemy');
+            } 
+            enemyTimer -= 10;
+            enemyFrame = 0;
+            console.log('EnemyTimer: ' + enemyTimer + ' Number of Enemies: ' + enemyNumber);
+            console.log(Enemies); 
+            difficulty++;
+    }else{
+        enemyFrame++;
     }
 }
-/*
-// Create new enemy instances + fill the array
-for(let i = 0; i < enemyNumber;i++){
- Enemies.push(new Enemy());  
-}
-//console.log(Enemies);*/
 function Animate(){
     ctx.clearRect(0,0,board_width,board_height);
     background.drawBackground();
-
-    //Animate the enemies
     Enemies.forEach(enemy =>{
         enemy.drawEnemy();
         enemy.moveEnemy();
+        enemy.checkBoomBoom(Explosions);
     });
-    //Animate and move the plane  
-    plane.movePlane();
-    plane.drawPlane();
-    requestAnimationFrame(Animate);
-    gameFrame++;
-    difficulty +=1;
-    addEnemies(gameFrame,difficulty);
+    Enemies = Enemies.filter(enemy => !enemy.destroyed);
 
+    for(let i = 0; i < Explosions.length;i++){
+        Explosions[i].drawExplosion();
+        if(Explosions[i].AnimPosX == 3){
+            Explosions.splice(Explosions[i],1);
+        }
+    }
+    plane.movePlane(input);
+    plane.planeCrash(Enemies);
+    plane.drawPlane();
+    if(plane.gameOver == false){
+        requestAnimationFrame(Animate);
+    }
+    addEnemies();
 }
 Animate();
