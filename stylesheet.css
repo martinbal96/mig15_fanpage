@@ -1,5 +1,109 @@
-#gameboard{
-    border: 10px solid black;
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+li{
+    display: inline;
+    border-right: 1px solid yellow;
+}
+li a{
+    text-decoration: none;
+    color:yellow;
+    padding: 14px 14px;
+}
+li a:hover{
+    background-color: yellow;
+    color: red;
+  }
+ul{
+    list-style-type: none;
+    margin: 10px;
+    padding: 0;
+  }
+#gameboard {
+    padding: 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border: 10px solid yellow;
     width: 600px;
     height: 600px;
+}
+@font-face {
+    font-family: redOctober;
+    src: url(assets/RedOctober.ttf);
+}
+html{
+    height: 100%;
+}
+body {
+    height: 100%;
+    background-image: linear-gradient(black 75%, white);
+    background-repeat: no-repeat;
+    font-family: redOctober;
+}
+.container {
+    background: red;
+    max-width: 960px;
+    margin: 30px auto;
+    padding: 10px;  
+}
+.box{
+    font-size: 20px;
+    color:white;
+}
+h1{
+    font-size: 30px;
+}
+p{
+    font-size: 20px;
+}
+#gameover{
+    display: none;
+    background-image: linear-gradient(yellow 25%, red);
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);  
+    left: 50%;
+    transform: translateX(-50%);
+    color:red;
+    text-shadow: 2px 2px yellow;
+    padding: 15px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    border-radius: 10px; 
+}
+button{
+    background-color: yellow;
+    border-radius: 5px;
+    font-size: 15px;
+    margin-top: 8px;
+    color: red;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-family: redOctober;
+    border: none;
+    cursor: pointer;
+}
+input{
+    border: none;
+    background-color: yellow;
+    border-radius: 5px;
+}
+#header{
+    background: black;
+    background-image: url(assets/banner.jpg);
+    background-repeat: no-repeat;
+    background-position: top center;
+    height: 20vh;
+    color:yellow;
+    text-shadow: 2px 2px red;
+    padding-top: 10px;
+    padding-left: 10px;
+}
+#content{
+    background-image: linear-gradient(red 15%, yellow);
+    background-repeat: no-repeat;
 }

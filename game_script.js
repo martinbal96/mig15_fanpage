@@ -1,4 +1,6 @@
 const gameboard = document.getElementById('gameboard');
+const gameOver = document.getElementById('gameover');
+const reset = document.getElementById('reset');
 const ctx = gameboard.getContext('2d');
 const board_width = gameboard.width = 600;
 const board_height = gameboard.height = 600;
@@ -50,13 +52,22 @@ class KeyboardInput{
 }
 class Score{
     constructor(){
-
+        this.finalScore = 0;
     }
     displayScore(){
-
+        ctx.font = '50px redOctober';
+        ctx.fillStyle = 'Yellow';
+        ctx.fillText('Score: ' + this.finalScore, 20, 50);
+        ctx.fillStyle = 'Red';
+        ctx.fillText('Score: ' + this.finalScore, 23, 53);
     }
-    updateScore(){
-
+    updateScore(Enemies){
+        	Enemies.forEach(enemy => {
+                if(enemy.destroyed == true){
+                    this.finalScore += 1;
+                    console.log('Score is: ' + this.finalScore);
+                }
+            })
     }
 }
 class Plane{
@@ -194,7 +205,7 @@ class Background {
     }
     drawBackground(){
         ctx.drawImage(this.bgSky,this.bgPos2,0);
-        ctx.drawImage(this.bgSky,this.bgPos2-spriteWidth,0);
+        ctx.drawImage(this.bgSky,(this.bgPos2-spriteWidth)+1,0);
         if(this.bgPos2 >= spriteWidth){
             this.bgPos2 =0;
         }else{
@@ -284,9 +295,10 @@ const plane = new Plane();
 const input = new KeyboardInput();
 const background = new Background ();
 const explosion = new Explosion();
+const score = new Score();
 
 //Might require some tweaking, but better now
-function addEnemies(){    
+function addEnemies(Score){    
     let enemyRandom = Math.floor(Math.random() * 400 + 100)
     if(enemyFrame > enemyTimer + enemyRandom && difficulty % 5 == 0 ){
             for(let i = 0; i < enemyNumber;i++){
@@ -298,7 +310,8 @@ function addEnemies(){
             enemyFrame = 0;
             difficulty++;
             console.log('EnemyTimer: ' + enemyTimer + ' Number of Enemies: ' + enemyNumber);
-            console.log(Enemies);     
+            console.log(Enemies);  
+            Score.finalScore ++;  
 
     }else if(enemyFrame > enemyTimer + enemyRandom){
             for(let i = 0; i < enemyNumber;i++){
@@ -310,6 +323,7 @@ function addEnemies(){
             console.log('EnemyTimer: ' + enemyTimer + ' Number of Enemies: ' + enemyNumber);
             console.log(Enemies); 
             difficulty++;
+            Score.finalScore ++;  
     }else{
         enemyFrame++;
     }
@@ -322,6 +336,7 @@ function Animate(){
         enemy.moveEnemy();
         enemy.checkBoomBoom(Explosions);
     });
+    score.updateScore(Enemies);
     Enemies = Enemies.filter(enemy => !enemy.destroyed);
 
     for(let i = 0; i < Explosions.length;i++){
@@ -333,9 +348,17 @@ function Animate(){
     plane.movePlane(input);
     plane.planeCrash(Enemies);
     plane.drawPlane();
+    addEnemies(score);
+    score.displayScore();
     if(plane.gameOver == false){
         requestAnimationFrame(Animate);
     }
-    addEnemies();
+    else if(plane.gameOver == true){
+        gameOver.style.display = 'block';
+        reset.addEventListener('click', () => {
+            console.log('Clicked');
+            location.reload();
+        })
+    }
 }
 Animate();

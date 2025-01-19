@@ -7,7 +7,25 @@
     <link rel="stylesheet" href="stylesheet.css"/>
 </head>
 <body>
-    <canvas id="gameboard"></canvas>
+    <div class="container">
+        <div class ="box" id="header"><h1>МиГ-15 фanpage</h1></div>
+        <div class ="box" id="menu">
+            <ul>
+                <li><a href="game.html">Game</a></li>
+                <li><a href="news.asp">Scores</a></li>
+                <li><a href="contact.asp">About</a></li>
+              </ul> 
+        </div>
+        <div class ="box" id="content">
+            <div id="gameover">
+                <h1>Game Over</h1>
+                <form>
+                    <input type="text" id="name" name="name">
+                  </form> 
+                <button id="reset">Reset</button>
+                </div>
+            <canvas id="gameboard"></canvas></div>
+    </div>
 </body>
     <script src="game_script.js"></script>
 </html>
