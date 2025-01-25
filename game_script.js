@@ -2,8 +2,11 @@ const gameboard = document.getElementById('gameboard');
 const gameOver = document.getElementById('gameover');
 const reset = document.getElementById('reset');
 const ctx = gameboard.getContext('2d');
+const nameField = document.getElementById('name');
 const board_width = gameboard.width = 600;
 const board_height = gameboard.height = 600;
+const scores = JSON.parse(localStorage.getItem("scores")) || [];
+const scoreNumber = 10;
 
 const spriteWidth = 600;
 const spriteHeight = 600;
@@ -159,8 +162,8 @@ class Plane{
     }
     planeCrash(Enemies){
         Enemies.forEach(enemy =>{
-            const planeRadius = (this.spriteWidth/2)*0.75;
-            const enemyRaidus = (enemy.spriteWidth/2)*0.75;
+            const planeRadius = (this.spriteWidth/2)*0.5;
+            const enemyRaidus = (enemy.spriteWidth/2)*0.5;
             const collisionDistance = planeRadius + enemyRaidus;
             const side1 = Math.pow((this.planePosX - enemy.positionX),2);
             const side2 = Math.pow((this.planePosY - enemy.positionY),2);
@@ -355,9 +358,18 @@ function Animate(){
     }
     else if(plane.gameOver == true){
         gameOver.style.display = 'block';
-        reset.addEventListener('click', () => {
-            console.log('Clicked');
-            location.reload();
+        reset.addEventListener('click', () => {          
+            let lastScore = score.finalScore;
+            let lastName = nameField.value;
+            const newEntry = {
+                name: lastName,
+                score: lastScore
+            };
+            scores.push(newEntry);
+            scores.sort((a,b) => b.score - a.score);
+            scores.splice(scoreNumber);
+            localStorage.setItem('scores', JSON.stringify(scores));
+            window.location.reload();
         })
     }
 }

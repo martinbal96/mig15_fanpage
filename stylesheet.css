@@ -37,11 +37,36 @@ ul{
 html{
     height: 100%;
 }
+h2{
+    color: yellow;
+    padding-left: 10px;
+}
+.para{
+
+    padding: 10px;
+    color: red;
+    text-shadow: 2px 2px yellow;
+}
+p{
+    margin-top: 20px;
+    padding: 10px;
+    color: yellow;
+    text-shadow: 3px 3px red;
+}
 body {
     height: 100%;
     background-image: linear-gradient(black 75%, white);
     background-repeat: no-repeat;
     font-family: redOctober;
+}
+#scoreTable{
+    font-size: 25px;
+    color: yellow;
+    text-shadow: 3px 3px red;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 .container {
     background: red;
