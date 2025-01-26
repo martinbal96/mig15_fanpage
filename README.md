@@ -1,11 +1,18 @@
 Mig-15 Fangpage
+
 Save the planet!
+
 The enemy returned and is stronger and more dangerous than ever.
+
 Your task is simple, as a heroic pilot of the newest technological miracle - jetplane Mig-15. You have to protect your family, country and the most important of all the goverment.
 Good luck!
 
 This is a simple page featuring endless side scrolling game with increasingly numerous enemies.
-There are three tabs in total 1)the game itself, 2)highscores 3)a little about the game
+There are three tabs in total 
+
+1)the game itself
+2)highscores
+3)a little about the game
 
 Features:
   - Player character (the plane) that can move up/down, left/right with arrow keys and shoot with left mouse button.
@@ -58,6 +65,7 @@ Class Score:
   - Methods: displayScore, updateScore
 Class Explosion:
   - Method: drawExplosion
-  - draws the explosions from the array 
+  - draws the explosions from the array
+
 Game continuously animates everything, controls movement, shows explosions. When player finally collides with the enemy, animation stops and game over screen is displayed.
 At the end of each game, localstorage is used to store and display 10 Highest scores
