@@ -1,5 +1,7 @@
 Mig-15 Fangpage
 
+This project was developed as a semestral work for the WWWAP class 2024. Pedf, Charles University.
+
 Save the planet!
 
 The enemy returned and is stronger and more dangerous than ever.
