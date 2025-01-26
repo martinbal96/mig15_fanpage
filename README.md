@@ -34,6 +34,8 @@ Features:
 Technologies used:
   - HTML, CSS, JS - for the webpage, styling and script
   - Software used - MS Paint (graphic), VS Code (code), GitHub, GitBash (version control and managament)
+  - Font used RedOctober (https://www.neogrey.com/portfolio/red-october/)
+  - Image source for the banner (https://cs.m.wikipedia.org/wiki/Soubor:MiG-15_RB2.jpg)
   - All the sprite graphic was made by me, in a retro pixelart style.  
   - Assets include several spritesheets with player movement, enemy movement, explosions and background movement
   - The game cycles quickly between coordinates of these spritesheets -> displaying one image at a time -> creating  smooth animation 
