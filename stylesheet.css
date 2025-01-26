@@ -29,6 +29,8 @@ ul{
     border: 10px solid yellow;
     width: 600px;
     height: 600px;
+    margin-top: 20px;
+    padding-bottom: 20px;
 }
 @font-face {
     font-family: redOctober;
@@ -41,17 +43,17 @@ h2{
     color: yellow;
     padding-left: 10px;
 }
-.para{
-
-    padding: 10px;
-    color: red;
-    text-shadow: 2px 2px yellow;
+img{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 450px;
+    padding-bottom: 15px;
 }
 p{
     margin-top: 20px;
     padding: 10px;
     color: yellow;
-    text-shadow: 3px 3px red;
 }
 body {
     height: 100%;

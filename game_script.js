@@ -1,3 +1,4 @@
+window.addEventListener('load',function(){
 const gameboard = document.getElementById('gameboard');
 const gameOver = document.getElementById('gameover');
 const reset = document.getElementById('reset');
@@ -374,3 +375,4 @@ function Animate(){
     }
 }
 Animate();
+});
