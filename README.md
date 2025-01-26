@@ -41,17 +41,21 @@ Technologies used:
 The game itself is coded in OOP approach. JavaScript was used to code all of the game scripts and logic. The main script file is game_script.js
 
 About:
+
 Class Plane: 
   - takes control of player movement, display, animations and collision
   - Methods: drawPlane, movePlane, planeCrash
   - all the possible coordinates of the plane animations are stored in an array
+
 Class Background:
   - controls endlessly scrolling background. Two images are displayed, drawn and reset (partially out of the canvas) so the background movement is always smooth
   -  Method: drawBackground
+
 Class KeyboardImput:
   - listens to player input and passes the up,down,left,right, keyup to the Plane Class.
   - listens to mouse click and adds explosions (they are stored in an array)
   - passes the explosions array to the Enemy class where collision is examined
+
 Class Enemy:
   - creates new enemy instances (stored in an array)
   - randomizes spawns of these instances off the canvas on X and Y axis
@@ -60,9 +64,11 @@ Class Enemy:
   - examines enemy positions and exlosion collisions, if there is a match lives get substracted from enemies
   - if there are no lives left, enemies are despawned (removed from the array)
   - Methods: drawEnemy,moveEnemy,checkBoomBoomb
+
 Class Score:
   - Displays and adds to the total score
   - Methods: displayScore, updateScore
+
 Class Explosion:
   - Method: drawExplosion
   - draws the explosions from the array
