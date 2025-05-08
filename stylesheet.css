@@ -21,7 +21,7 @@ ul{
     margin: 10px;
     padding: 0;
   }
-#gameboard {
+#gameboard, #cockpit {
     padding: 0;
     display: block;
     margin-left: auto;
