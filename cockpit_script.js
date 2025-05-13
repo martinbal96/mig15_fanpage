@@ -9,6 +9,9 @@ const maxEnemies = 3;
 let nowEnemies = 0;
 let Enemies = [];
 let addEnemyFrame = 0;
+const engineSound = new Audio();
+engineSound.src = 'assets/jetengine.mp3';
+engineSound.loop = true;
 
 class KeyboardInput{
     constructor(){
@@ -85,9 +88,29 @@ class Clouds{
 class Enemy{
     constructor(){    
         this.enemy = new Image();
+        this.insult = 0;
         this.enemy.src = 'sprites/sprite_saucer_move_transparent.png';
         this.sound_boom = new Audio();
-        this.sound_boom.src = 'assets/boom.mp3'
+        this.sound_boom.src = 'assets/boom.mp3';
+        this.sound_ufoengine = new Audio();
+        this.sound_ufoengine.src = 'assets/ufoengine.mp3';
+        this.sound_ufoengine.loop = true;
+        this.sound_par1 = new Audio();
+        this.sound_par1.src = 'assets/par1.mp3';
+        this.sound_12min = new Audio();
+        this.sound_12min.src = 'assets/12min.mp3';
+        this.sound_laser = new Audio();
+        this.sound_laser.src = 'assets/laser.mp3';
+        this.sound_cult1 = new Audio();
+        this.sound_cult1.src = 'assets/cult1.mp3';
+        this.sound_cult2 = new Audio();
+        this.sound_cult2.src = 'assets/cult2.mp3';
+        this.sound_ich = new Audio();
+        this.sound_ich.src = 'assets/ich.mp3';
+        this.sound_loslos = new Audio();
+        this.sound_loslos.src = 'assets/loslos.mp3';
+        this.sound_nein = new Audio();
+        this.sound_nein.src = 'assets/nein.mp3';
         this.enemy_size = 1800;
         this.lives = 40;
         this.destroyed = false;
@@ -123,11 +146,15 @@ class Enemy{
                 this.enemy_place = 'right';
                 break;
         }
-        console.log(this.enemy_place);
     }
     enemyShoot(Plane){
-        if(this.inPos && this.enemy_frame % 500 == 0){    
+        if(this.inPos && this.enemy_frame % 600 == 0){    
             Plane.lives -=1;
+            this.sound_laser.play();
+            this.parade = Math.floor(Math.random() * 2);
+            if(this.parade == 1){
+                this.sound_par1.play();
+            }
             console.log('Hit!' + Plane.lives);
         }
     }
@@ -136,12 +163,18 @@ class Enemy{
         if(this.enemy_frame % this.enemy_slow == 0){
             if(this.enemy_pos == (this.enemy_size-sprite_size)){
                 this.enemy_pos = 0;
-                
             }else{
                 this.enemy_pos +=sprite_size;
             }
         }
         this.enemy_frame++;       
+    }
+    playUfo(){
+        if(this.posX < 700 && this.posY < 700 && this.destroyed == false && this.avoided == false){
+            this.sound_ufoengine.play();
+        }else if(this.destroyed == true || this.avoided == true ){
+            this.sound_ufoengine.pause();
+        }
     }
     moveEnemyIn(){
         if(this.posX == this.goalX && this.posY == this.goalY){
@@ -193,7 +226,6 @@ class Enemy{
             }else if(this.posX == this.goalX && this.posY != this.goalY2){
                 this.posY -=1;
             }
-            console.log('posX ' + this.posX + ' posY ' + this.posY);
         }
     }
     avoidEnemy(Plane){
@@ -202,12 +234,35 @@ class Enemy{
                 this.avoided = true;
                 Plane.dodged = false;
                 this.inPos = false;
-                console.log('Avoided');
+                this.insult = Math.floor(Math.random() * 3);
+                switch(this.insult){
+                    case 0:
+                        this.sound_12min.play();
+                        break;
+                    case 1:
+                        this.sound_cult1.play();
+                        break;
+                    case 2:
+                        this.sound_cult2.play();
+                        break;
+                }
+
             }else if(this.inPos == true && this.enemy_place == 'left'){
                 this.avoided = true;
                 Plane.dodged = false;
                 this.inPos = false;
-                console.log('Avoided');
+                this.insult = Math.floor(Math.random() * 3);
+                switch(this.insult){
+                    case 0:
+                        this.sound_ich.play();
+                        break;
+                    case 1:
+                        this.sound_loslos.play();
+                        break;
+                    case 2:
+                        this.sound_nein.play();
+                        break;
+                }
             }
         }else if(Plane.dodged == true && this.inPos == false){
             Plane.dodged = false;
@@ -289,14 +344,25 @@ class Plane{
         this.sprite_size_shoot = 4800;
         this.plane_idle_1 = new Image();
         this.plane_idle_1.src = 'sprites/loop_idle_1.png';
-
+        this.plane_idle_crack_1 = new Image();
+        this.plane_idle_crack_1.src = 'sprites/loop_idle_crack_1.png';
+        this.plane_idle_crack_2 = new Image();
+        this.plane_idle_crack_2.src = 'sprites/loop_idle_crack_2.png';
+        this.plane_rotation_right = new Image();
+        this.plane_rotation_right.src = 'sprites/loop_rotation_right.png';
+        this.plane_idle_2 = new Image();
+        this.plane_idle_2.src = 'sprites/loop_idle_2.png';
         this.sound_shoot = new Audio();
-        this.sound_shoot.src = 'assets/shoot.mp3'
-
+        this.sound_shoot.src = 'assets/shoot.mp3';
+        this.sound_glass = new Audio();
+        this.sound_glass.src = 'assets/glass.mp3';
         this.plane_sheet= new Image();
         this.plane_sheet.src = 'sprites/loop_plane.png';
         this.plane_anims = [];
-
+        this.damageState = 'normal';
+        this.idleSetIndex = 0;
+        this.idleSprites = {normal: [this.plane_idle_1, this.plane_idle_2],
+            crack1: [this.plane_idle_crack_1, this.plane_idle_crack_2]};
         this.animStates = [{name: 'rotation_left', frames: 10,},{name: 'rotation_right', frames: 10,},
         {name: 'speed_1', frames: 16},{name: 'speed_2', frames: 6},{name: 'shoot', frames: 8},
         {name: 'idle_1', frames: 38},{name: 'idle_2', frames: 38}];
@@ -314,11 +380,8 @@ class Plane{
         });
         console.log(this.plane_anims);
 
-        this.plane_rotation_right = new Image();
-        this.plane_rotation_right.src = 'sprites/loop_rotation_right.png'
-        this.plane_idle_2 = new Image();
-        this.plane_idle_2.src = 'sprites/loop_idle_2.png';
-        this.plane_idle = this.plane_idle_1;
+        //this.plane_idle = this.plane_idle_1;
+        this.plane_idle = this.idleSprites[this.damageState][this.idleSetIndex];
         this.plane_pos = 0;
         this.plane_frame = 0;
         this.plane_slow = 6;
@@ -335,7 +398,14 @@ class Plane{
         this.dodged = false;
         this.lives = 3;
     }
+    updateDamage(){
+        if(this.lives == 1){
+            this.damageState = 'crack1';
+            this.sound_glass.play();
+        }
+    }
     drawPlane(KeyboardInput){
+        this.updateDamage();
         switch(KeyboardInput.key){
             case'ArrowLeft':
             if (this.state !== 'rotation_left') {
@@ -435,22 +505,16 @@ class Plane{
             }
         }
         else if(this.state == 'idle'){
-            ctx.drawImage(this.plane_idle,this.plane_pos,0,sprite_size,sprite_size,0,0,cockpit_width,cockpit_height);
-            if(this.plane_frame % this.plane_slow == 0){
-                this.plane_frame ++;
-                if(this.plane_pos == (this.sprite_size_idle-sprite_size) && this.plane_idle == this.plane_idle_1){
-                    this.plane_idle = this.plane_idle_2;
+            const currentIdleSprite = this.idleSprites[this.damageState][this.idleSetIndex];
+            ctx.drawImage(currentIdleSprite,this.plane_pos,0,sprite_size,sprite_size,0,0,cockpit_width,cockpit_height);
+            if (this.plane_frame % this.plane_slow === 0) {
+                this.plane_pos += sprite_size;
+                if (this.plane_pos >= this.sprite_size_idle) {
                     this.plane_pos = 0;
-                }else if(this.plane_pos == (this.sprite_size_idle-sprite_size) && this.plane_idle == this.plane_idle_2){
-                    this.plane_idle = this.plane_idle_1;
-                    this.plane_pos = 0;
-                }else{
-                    this.plane_pos += sprite_size;
+                    this.idleSetIndex = 1 - this.idleSetIndex; // toggle between 0 and 1
                 }
             }
-            else{
-                this.plane_frame ++;
-            }
+            this.plane_frame++;
         }     
     }
 }
@@ -462,19 +526,16 @@ const enemy = new Enemy();
 const explosion = new Explosion();
 
 function addEnemies(){
-    if(addEnemyFrame == 800){
-        if(nowEnemies < maxEnemies){
+    if(addEnemyFrame++ >= 800 && nowEnemies <= maxEnemies){
             nowEnemies +=1;
             Enemies.push(new Enemy());
             addEnemyFrame = 0;
-    
-        }else{
-            addEnemyFrame +=1;
         }
-    }else{
-        addEnemyFrame +=1;
-    }
 }
+//engineSound.play();
+document.addEventListener('click', () => {
+    engineSound.play();
+  }, { once: true });
 function Animate(){
     ctx.clearRect(0,0,cockpit_width,cockpit_height);
     ctx.drawImage(sky,0,0);
@@ -494,10 +555,10 @@ function Animate(){
             nowEnemies -=1;
             console.log(nowEnemies);
         }
+        enemy.playUfo();
     });
     explosion.drawExplosion(plane);    
-    Enemies = Enemies.filter(enemy => !enemy.destroyed);
-    Enemies = Enemies.filter(enemy => !enemy.enemy_out);
+    Enemies = Enemies.filter(enemy => !enemy.destroyed && !enemy.enemy_out);
     plane.drawPlane(input);
     requestAnimationFrame(Animate);
 }

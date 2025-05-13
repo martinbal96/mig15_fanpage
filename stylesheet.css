@@ -3,20 +3,20 @@
     padding: 0;
     margin: 0;
 }
-li{
+#menu li{
     display: inline;
     border-right: 1px solid yellow;
 }
-li a{
+#menu li a{
     text-decoration: none;
     color:yellow;
     padding: 14px 14px;
 }
-li a:hover{
+#menu li a:hover{
     background-color: yellow;
     color: red;
   }
-ul{
+#menu ul{
     list-style-type: none;
     margin: 10px;
     padding: 0;
@@ -133,4 +133,33 @@ input{
 #content{
     background-image: linear-gradient(red 15%, yellow);
     background-repeat: no-repeat;
+}
+#content h2{
+    text-align: center;
+}
+#content ul {
+  list-style-type: none;
+  margin: 10px;
+  padding-left: 0;
+  text-align: center;
+}
+
+#content li {
+  margin-bottom: 10px;
+}
+#content li a{
+    text-decoration: none;
+    color:yellow;
+    padding: 14px 14px;
+}
+#content li a:hover{
+    background-color: yellow;
+    color: red;
+}
+#gif{
+    border: 10px solid yellow;
+    padding: 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
