@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MiG-15 ejection procedure</title>
+  <link rel="stylesheet" href="stylesheet.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="box" id="header">
+      <h1>Encyclopedia</h1>
+    </div>
+
+    <div class="box" id="menu">
+      <ul>
+        <li><a href="encyclopedia.html">← Back to Encyclopedia</a></li>
+      </ul>
+    </div>
+
+    <div class="box" id="content">
+      <h2>MiG-15 ejection procedure</h2>
+      <img id="gif" src="ejection.gif" alt="Ejection animation" width="300" />
+      <audio id="audio" src="brit3_eject.mp3" autoplay></audio>
+      <button onclick="replay()">Replay</button>
+    </div>
+  </div>
+
+  <script>
+    function replay() {
+      const gif = document.getElementById("gif");
+      const audio = document.getElementById("audio");
+
+      const src = gif.src;
+      gif.src = '';
+      gif.offsetHeight;
+      gif.src = src;
+
+      audio.currentTime = 0;
+      audio.play();
+    }
+  </script>
+</body>
+</html>
