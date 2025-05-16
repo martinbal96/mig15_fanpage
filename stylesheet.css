@@ -137,6 +137,14 @@ input{
 #content h2{
     text-align: center;
 }
+#content p{
+    margin-top: 0px;
+    margin-bottom: 0px;
+    text-align: center;
+}
+#content .imgs {
+    padding-bottom: 0px;
+}
 #content ul {
   list-style-type: none;
   margin: 10px;
